@@ -122,6 +122,8 @@
   gap: 12px;
 }
 
+/* CHANGED: every pill uses the same border color (the orange JS style is
+   gone), and the text color now fades when you hover. */
 .about__skill-pill {
   --pill-color: rgba(234, 246, 255, 0.35);
   position: relative;
@@ -130,11 +132,8 @@
   color: var(--text);
   border-radius: 8px;
   padding: 10px 20px;
-}
-
-.about__skill-pill--accent {
-  --pill-color: var(--accent-orange);
-  color: var(--accent-orange);
+  cursor: default;
+  transition: color 0.3s ease;
 }
 
 .about__skill-pill::before {
@@ -168,6 +167,34 @@
 .is-in .about__skill-text {
   opacity: 1;
   transition: opacity calc(0.5s * var(--speed)) ease calc((0.8s + var(--i) * 90ms) * var(--speed));
+}
+
+/* NEW: hover effect. A second, orange border draws itself around the pill
+   with the same top-center-to-bottom sweep as the entrance animation.
+   Change 0.55s to make the sweep faster or slower. */
+.about__skill-pill::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 8px;
+  border: 1px solid var(--accent-orange);
+  pointer-events: none;
+  --a: 0deg;
+  -webkit-mask-image:
+    conic-gradient(from 0deg, #000 var(--a), transparent 0),
+    conic-gradient(from calc(360deg - var(--a)), #000 var(--a), transparent 0);
+  mask-image:
+    conic-gradient(from 0deg, #000 var(--a), transparent 0),
+    conic-gradient(from calc(360deg - var(--a)), #000 var(--a), transparent 0);
+  transition: --a 0.55s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+.about__skill-pill:hover {
+  color: var(--accent-orange);
+}
+
+.about__skill-pill:hover::after {
+  --a: 182deg;
 }
 
 /* --- Education / Experience tabs --- */
@@ -495,6 +522,10 @@
   }
   .about__skill-pill::before {
     --a: 182deg !important;
+    transition: none !important;
+  }
+  /* NEW: no sweep animation on hover for reduced motion */
+  .about__skill-pill::after {
     transition: none !important;
   }
   .about__timeline::before,

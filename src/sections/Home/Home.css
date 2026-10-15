@@ -281,8 +281,10 @@
 .home__strip {
   position: relative;
   display: grid;
-  grid-template-columns: 1.2fr 1fr auto;
-  gap: 40px;
+  /* CHANGED: the motto takes the leftover space; stats and signature
+     only take the width they need. */
+  grid-template-columns: minmax(0, 1.2fr) auto auto;
+  gap: 32px;
   align-items: center;
   margin-top: 32px;
   padding: 28px 36px;
@@ -368,7 +370,7 @@
 
 .home__stats {
   display: flex;
-  gap: 40px;
+  gap: 28px; /* CHANGED: was 40px */
 }
 
 /* Each number sits centered above its label */
@@ -390,6 +392,7 @@
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--text-muted);
+  white-space: nowrap; /* CHANGED: keeps "CORE TOOLS" on one line */
 }
 
 .home__sign {
@@ -401,10 +404,11 @@
    handwriting flourishes stick out past the text box instead of being cut off. */
 .home__sig {
   display: inline-block;
-  padding: 14px 18px;
+  padding: 10px 12px; /* CHANGED: was 14px 18px */
   font-family: "Mrs Saint Delafield", "Brush Script MT", cursive;
-  font-size: 60px;
+  font-size: 44px; /* CHANGED: was 60px */
   line-height: 1.2;
+  white-space: nowrap; /* CHANGED: the name stays on one line */
   color: var(--text);
   clip-path: inset(-40% 100% -40% -10%);
 }
@@ -444,6 +448,13 @@
   100% { transform: translate(0, 0); }
 }
 
+/* NEW: smaller signature on mid-size screens */
+@media (max-width: 1100px) {
+  .home__sig {
+    font-size: 36px;
+  }
+}
+
 @media (max-width: 900px) {
   .home__inner {
     padding: 0 20px;
@@ -465,6 +476,17 @@
   }
   .home__sign {
     text-align: left;
+  }
+  /* NEW */
+  .home__sig {
+    font-size: 36px;
+  }
+}
+
+/* NEW: small phones */
+@media (max-width: 400px) {
+  .home__sig {
+    font-size: 30px;
   }
 }
 

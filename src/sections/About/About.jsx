@@ -119,9 +119,10 @@ function About() {
             </p>
             <div className="about__skills">
               {SKILLS.map((skill, i) => (
+                // CHANGED: every pill now uses the same style (JS is no longer orange).
                 <span
                   key={skill}
-                  className={`about__skill-pill${skill === 'JS' ? ' about__skill-pill--accent' : ''}`}
+                  className="about__skill-pill"
                   style={{ '--i': i }}
                 >
                   <span className="about__skill-text">{skill}</span>

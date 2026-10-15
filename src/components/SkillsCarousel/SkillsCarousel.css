@@ -3,7 +3,11 @@
   flex-direction: column;
   align-items: center;
   gap: 28px;
-  padding: 40px 0;
+  /* CHANGED: a fixed full width, so the carousel no longer shrinks or grows
+     with the text in the detail panel. Side padding keeps it off the edges. */
+  width: 100%;
+  box-sizing: border-box;
+  padding: 40px 16px;
 }
 
 .skills-carousel__stage {
@@ -15,12 +19,14 @@
   align-items: center;
   justify-content: center;
   perspective: 1200px; /* gives the rotateY turn real depth instead of looking flat */
+  overflow-x: clip; /* cuts off cards that stick out sideways */
 }
 
 .skills-carousel__card {
   position: absolute;
   width: 180px;
   height: 220px;
+  gap: 12px;
   border-radius: 18px;
 
   background: rgba(255, 255, 255, 0.06);
@@ -177,6 +183,7 @@
 .skills-carousel__detail {
   width: 100%;
   max-width: 640px;
+  box-sizing: border-box; /* CHANGED: padding no longer adds to the width */
   min-height: 150px; /* keeps the page from jumping when the text length changes */
   display: flex;
   align-items: center; /* text sits in the middle, so any spare space splits top and bottom */
@@ -238,6 +245,48 @@
   border-radius: 6px;
   border: 1px solid rgba(91, 192, 255, 0.4);
   color: var(--accent-blue);
+}
+
+/* NEW: phones. Smaller cards so 3 fit across the screen
+   (the spacing between cards is set in SkillsCarousel.jsx). */
+@media (max-width: 640px) {
+  .skills-carousel {
+    gap: 22px;
+    padding: 32px 12px;
+  }
+
+  .skills-carousel__stage {
+    height: 210px;
+  }
+
+  .skills-carousel__card {
+    width: 116px;
+    height: 170px;
+    gap: 12px;
+    border-radius: 16px;
+  }
+
+  .skills-carousel__icon {
+    width: 40px;
+    height: 40px;
+  }
+
+  .skills-carousel__label {
+    font-size: 12px;
+  }
+
+  .skills-carousel__card--active .skills-carousel__label {
+    font-size: 14px;
+  }
+
+  .skills-carousel__controls {
+    gap: 18px;
+  }
+
+  .skills-carousel__detail {
+    min-height: 190px; /* room for the longest description, so nothing jumps */
+    padding: 18px 20px;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -259,7 +259,7 @@ function Home({ onLogoLanded, introDone = true }) {
           </div>
 
           <div className="home__sign">
-            <span className="home__sig">John Patrick</span>
+            <span className="home__sig">John Patrick Macaspac</span>
             <GlitchRole roles={SIGN_ROLES} active={introDone} />
           </div>
         </div>

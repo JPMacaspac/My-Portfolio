@@ -3,7 +3,12 @@ import useInView from "../../hooks/useInView";
 import "./SkillsCarousel.css";
 
 const AUTOPLAY_MS = 4000; // how long each skill stays centered before moving on
-const MAX_VISIBLE_OFFSET = 2; // shows 5 cards at once: active + 2 on each side
+
+// Desktop shows 5 cards at once (active + 2 on each side).
+// Phones show 3 cards at once (active + 1 on each side).
+const DESKTOP = { maxOffset: 2, spacing: 190 };
+const MOBILE = { maxOffset: 1, spacing: 130 };
+const MOBILE_QUERY = "(max-width: 640px)";
 
 // `description` and `usedIn` fill the panel under the carousel.
 // These are drafts, so edit them to match your real work.
@@ -55,21 +60,37 @@ function getOffset(index, activeIndex, total) {
   return offset;
 }
 
-function getCardStyle(offset) {
+function getCardStyle(offset, { maxOffset, spacing }) {
   const abs = Math.abs(offset);
 
   const scale = abs === 0 ? 1 : abs === 1 ? 0.82 : abs === 2 ? 0.66 : 0.55;
   const opacity = abs === 0 ? 1 : abs === 1 ? 0.85 : abs === 2 ? 0.5 : 0.22;
-  const translateX = offset * 190;
+  const translateX = offset * spacing;
   const rotateY = offset * -10; // subtle 3D turn, adds depth without being gimmicky
   const zIndex = 100 - abs;
 
   return {
     transform: `translateX(${translateX}px) scale(${scale}) rotateY(${rotateY}deg)`,
-    opacity: abs > MAX_VISIBLE_OFFSET ? 0 : opacity,
+    opacity: abs > maxOffset ? 0 : opacity,
     zIndex,
-    pointerEvents: abs > MAX_VISIBLE_OFFSET ? "none" : "auto",
+    pointerEvents: abs > maxOffset ? "none" : "auto",
   };
+}
+
+// True while the screen is phone-sized. Updates if the window is resized.
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(
+    () => window.matchMedia(MOBILE_QUERY).matches
+  );
+
+  useEffect(() => {
+    const mq = window.matchMedia(MOBILE_QUERY);
+    const onChange = (e) => setIsMobile(e.matches);
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
+  }, []);
+
+  return isMobile;
 }
 
 export default function SkillsCarousel() {
@@ -77,6 +98,8 @@ export default function SkillsCarousel() {
   const [hovered, setHovered] = useState(false);
   // inView drives the entrance animation and also decides when to auto-rotate
   const [rootRef, inView] = useInView();
+  const isMobile = useIsMobile();
+  const layout = isMobile ? MOBILE : DESKTOP;
   const total = SKILLS.length;
   const active = SKILLS[activeIndex];
 
@@ -115,7 +138,7 @@ export default function SkillsCarousel() {
             <div
               key={skill.name}
               className={`skills-carousel__card${isActive ? " skills-carousel__card--active" : ""}`}
-              style={getCardStyle(offset)}
+              style={getCardStyle(offset, layout)}
               onClick={() => goTo(i)}
             >
               <img
