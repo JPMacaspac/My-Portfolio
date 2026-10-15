@@ -1,0 +1,41 @@
+:root {
+  --bg: #0d0d0f;
+  --text: #eaf6ff;
+  --text-muted: #9ca3af;
+
+  --accent-orange: #ff8c1a;
+  --accent-blue: #5bc0ff;
+
+  --font-sans: -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: ui-monospace, Consolas, monospace;
+
+  color-scheme: dark;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html {
+  scrollbar-width: none;       /* Firefox */
+  -ms-overflow-style: none;    /* old Edge/IE */
+}
+
+html::-webkit-scrollbar {
+  display: none;               /* Chrome, Safari, new Edge */
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+}
+
+#root {
+  min-height: 100svh;
+}

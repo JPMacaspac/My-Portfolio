@@ -1,0 +1,455 @@
+.project-expand-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(5, 5, 6, 0.75);
+  backdrop-filter: blur(6px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s ease;
+  z-index: 200;
+}
+
+.project-expand-backdrop--open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.project-expand-panel {
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  background: #121214;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  overflow: hidden;
+  z-index: 201;
+  transition:
+    top 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+    left 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+    width 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+    height 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+    border-radius 0.5s ease;
+}
+
+.project-expand-panel__hero {
+  position: relative;
+  width: 100%;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 64px;
+  overflow: hidden;
+  /* The hero's height is set from JS, so it grows in step with the panel */
+  transition: height 0.5s cubic-bezier(0.16, 1, 0.3, 1), background 0.25s ease;
+}
+
+.project-expand-panel__hero-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* the full photo is one click away via "View full photo" */
+  cursor: zoom-in;
+  animation: project-hero-fade 0.25s ease;
+}
+
+@keyframes project-hero-fade {
+  from { opacity: 0.4; }
+  to   { opacity: 1; }
+}
+
+.project-expand-panel__close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 1;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(5, 5, 6, 0.5);
+  color: var(--text);
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.project-expand-panel__close--visible {
+  opacity: 1;
+}
+
+/* "View full photo" pill, bottom-right of the hero picture */
+.project-expand-panel__expand {
+  position: absolute;
+  right: 16px;
+  bottom: 16px;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(5, 5, 6, 0.6);
+  backdrop-filter: blur(6px);
+  color: var(--text);
+  font-size: 12px;
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none; /* not clickable until it has faded in */
+  transition: opacity 0.3s ease, border-color 0.2s ease;
+}
+
+.project-expand-panel__expand--visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.project-expand-panel__expand:hover {
+  border-color: var(--accent-blue);
+}
+
+.project-expand-panel__body {
+  flex: 1;
+  min-height: 0; /* lets the body shrink and scroll instead of overflowing the panel */
+  padding: 24px 28px 28px;
+  overflow-y: auto;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+  transition-delay: 0.25s;
+}
+
+.project-expand-panel__body--visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.project-expand-panel__name {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0 0 12px;
+}
+
+.project-expand-panel__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.project-expand-panel__tag {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--accent-blue);
+  border: 1px solid rgba(91, 192, 255, 0.4);
+  border-radius: 6px;
+  padding: 3px 8px;
+}
+
+.project-expand-panel__desc {
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--text-muted);
+  margin: 16px 0 24px;
+  max-width: 60ch;
+}
+
+.project-expand-panel__subheading {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--accent-blue);
+  margin: 0 0 10px;
+}
+
+/* One row that scrolls sideways -- 11 photos won't fit in a single view */
+.project-expand-panel__thumbs {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding: 4px 2px 10px;
+}
+
+.project-expand-panel__thumb {
+  width: 90px;
+  height: 64px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+  overflow: hidden;
+  cursor: pointer;
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.project-expand-panel__thumb:hover,
+.project-expand-panel__thumb--active {
+  border-color: var(--accent-blue);
+  transform: translateY(-2px);
+}
+
+.project-expand-panel__thumb-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* --- Clean scrollbars: only a slim thumb. No track box, no arrow buttons. --- */
+
+.project-expand-panel__body::-webkit-scrollbar,
+.project-expand-panel__thumbs::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.project-expand-panel__body::-webkit-scrollbar-track,
+.project-expand-panel__thumbs::-webkit-scrollbar-track,
+.project-expand-panel__body::-webkit-scrollbar-corner,
+.project-expand-panel__thumbs::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* The little arrow buttons at each end of the bar */
+.project-expand-panel__body::-webkit-scrollbar-button,
+.project-expand-panel__thumbs::-webkit-scrollbar-button {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+.project-expand-panel__body::-webkit-scrollbar-thumb,
+.project-expand-panel__thumbs::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.22);
+  border: 2px solid transparent;
+  background-clip: padding-box; /* the transparent border makes the visible bar slimmer */
+  border-radius: 999px;
+}
+
+.project-expand-panel__body::-webkit-scrollbar-thumb:hover,
+.project-expand-panel__thumbs::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(91, 192, 255, 0.6);
+}
+
+/* Firefox doesn't support the ::-webkit-scrollbar rules above, so it gets
+   the standard equivalent. (Chrome/Edge skip this block on purpose --
+   if they saw it, they'd ignore the styling above.) */
+@supports not selector(::-webkit-scrollbar) {
+  .project-expand-panel__body,
+  .project-expand-panel__thumbs {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.22) transparent;
+  }
+}
+
+/* --- Full-photo view (opens on top of the expanded panel) --- */
+
+.project-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px;
+  background: rgba(5, 5, 6, 0.9);
+  backdrop-filter: blur(8px);
+  animation: project-lightbox-in 0.25s ease;
+}
+
+.project-lightbox__frame {
+  position: relative;
+  display: flex;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 14px;
+  overflow: hidden;
+  background: #0d0d0f;
+  box-shadow: 0 30px 80px -20px rgba(0, 0, 0, 0.8);
+  animation: project-lightbox-pop 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Natural size, scaled down only if the screen is smaller than the photo,
+   so the whole picture is always visible and never cropped. */
+.project-lightbox__img {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: calc(100vw - 66px);
+  max-height: calc(100vh - 66px);
+  object-fit: contain;
+  animation: project-hero-fade 0.25s ease; /* quick fade each time you flip to the next photo */
+}
+
+.project-lightbox__close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(5, 5, 6, 0.6);
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+}
+
+.project-lightbox__close:hover {
+  border-color: var(--accent-blue);
+}
+
+.project-lightbox__counter {
+  position: absolute;
+  left: 12px;
+  bottom: 12px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text);
+  background: rgba(5, 5, 6, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 999px;
+  padding: 4px 10px;
+}
+
+/* Previous / next arrows, bottom center of the photo */
+.project-lightbox__nav {
+  position: absolute;
+  left: 50%;
+  bottom: 14px;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 12px;
+}
+
+.project-lightbox__arrow {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(5, 5, 6, 0.6);
+  backdrop-filter: blur(6px);
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background 0.2s ease, transform 0.15s ease;
+}
+
+.project-lightbox__arrow:hover {
+  border-color: var(--accent-blue);
+  background: rgba(91, 192, 255, 0.15);
+}
+
+.project-lightbox__arrow:active {
+  transform: scale(0.92);
+}
+
+@keyframes project-lightbox-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes project-lightbox-pop {
+  from { opacity: 0; transform: scale(0.96); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+/* --- Switching projects inside the expanded view --- */
+
+.project-expand-panel__content {
+  animation: project-swap 0.45s ease;
+}
+
+@keyframes project-swap {
+  from { opacity: 0; transform: translateX(14px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* Optional "Live demo" / "Source code" buttons (only shown when a project has a link) */
+.project-expand-panel__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 0 0 24px;
+}
+
+.project-expand-panel__btn {
+  display: inline-flex;
+  padding: 10px 20px;
+  border-radius: 999px;
+  border: 1px solid rgba(234, 246, 255, 0.3);
+  color: var(--text);
+  font-size: 13px;
+  text-decoration: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.project-expand-panel__btn:hover {
+  border-color: var(--accent-blue);
+}
+
+.project-expand-panel__btn--primary {
+  background: var(--accent-orange);
+  border-color: var(--accent-orange);
+  color: #1a1206;
+  font-weight: 600;
+}
+
+.project-expand-panel__btn--primary:hover {
+  border-color: var(--accent-orange);
+  box-shadow: 0 0 20px rgba(255, 140, 26, 0.45);
+}
+
+/* "Project 2 of 5" with previous / next arrows, pinned to the bottom */
+.project-expand-panel__nav {
+  flex-shrink: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 28px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-muted);
+  opacity: 0;
+  transition: opacity 0.4s ease 0.25s;
+}
+
+.project-expand-panel__nav--visible {
+  opacity: 1;
+}
+
+.project-expand-panel__nav div {
+  display: flex;
+  gap: 10px;
+}
+
+.project-expand-panel__nav button {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid rgba(91, 192, 255, 0.5);
+  background: rgba(91, 192, 255, 0.08);
+  color: var(--accent-blue);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.project-expand-panel__nav button:hover {
+  background: rgba(91, 192, 255, 0.2);
+}

@@ -1,0 +1,316 @@
+:root {
+  /* NAVBAR ANIMATION SPEED: every duration and delay below is multiplied by this.
+     1 = fast, 1.5 = medium (current), 2.2 = slow. */
+  --nav-speed: 1.5;
+}
+
+/* ------------------------------------------------------------------
+   Opening sequence (reversed when closing):
+   1. the logo in the corner dissolves
+   2. the same logo dissolves in at the top center, in a small glass circle
+   3. the circle grows to the left and right at the same time
+   4. the buttons fade in, moving out from the logo
+   ------------------------------------------------------------------ */
+
+/* The invisible button on top of the logo's resting place (upper left). */
+.navbar__corner {
+  position: fixed;
+  z-index: 100;
+  top: 20px;
+  left: 56px;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  cursor: pointer;
+  pointer-events: none; /* can't be clicked until the intro has finished */
+}
+
+.navbar--visible .navbar__corner {
+  pointer-events: auto;
+}
+
+/* A soft pulsing ring so people know the logo can be clicked */
+.navbar__corner::after {
+  content: "";
+  position: absolute;
+  inset: 2px;
+  border-radius: 50%;
+  border: 1px solid rgba(91, 192, 255, 0.55);
+  opacity: 0;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.navbar--visible .navbar__corner::after {
+  animation: navbar-ring 2.4s ease-out infinite;
+}
+
+.navbar__corner:hover::after {
+  border-color: rgba(91, 192, 255, 1);
+  box-shadow: 0 0 14px rgba(91, 192, 255, 0.7);
+}
+
+@keyframes navbar-ring {
+  0%   { transform: scale(0.8); opacity: 0.9; }
+  100% { transform: scale(1.5); opacity: 0; }
+}
+
+.navbar--open .navbar__corner {
+  pointer-events: none;
+}
+
+.navbar--open .navbar__corner::after {
+  animation: none;
+}
+
+/* The floating pill. Closed, it's an invisible small circle. */
+.navbar__pill {
+  position: fixed;
+  z-index: 100;
+  top: 14px;
+  left: 50%;
+  translate: -50% 0;
+  height: 56px;
+  width: 56px;
+  display: grid;
+  /* minmax(0, 1fr) lets the two sides shrink to nothing, so the logo stays
+     exactly in the middle while the pill grows and shrinks. A plain 1fr
+     refuses to get narrower than the buttons, which pushed the logo sideways. */
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  overflow: hidden;
+  white-space: nowrap;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(22, 26, 32, 0.62);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  box-shadow:
+    0 18px 50px -20px rgba(91, 192, 255, 0.45),
+    -20px 10px 50px -30px rgba(255, 140, 26, 0.35);
+  opacity: 0;
+  scale: 0.8;
+  pointer-events: none;
+  /* closing: shrink back first, then fade away */
+  transition:
+    width calc(0.6s * var(--nav-speed)) cubic-bezier(0.65, 0, 0.35, 1) calc(0.25s * var(--nav-speed)),
+    opacity calc(0.35s * var(--nav-speed)) ease calc(0.8s * var(--nav-speed)),
+    scale calc(0.35s * var(--nav-speed)) ease calc(0.8s * var(--nav-speed));
+}
+
+.navbar--open .navbar__pill {
+  width: min(760px, calc(100vw - 20px));
+  opacity: 1;
+  scale: 1;
+  pointer-events: auto;
+  /* opening: appear, then grow left and right */
+  transition:
+    opacity calc(0.4s * var(--nav-speed)) ease calc(0.25s * var(--nav-speed)),
+    scale calc(0.4s * var(--nav-speed)) cubic-bezier(0.16, 1, 0.3, 1) calc(0.25s * var(--nav-speed)),
+    width calc(0.8s * var(--nav-speed)) cubic-bezier(0.65, 0, 0.35, 1) calc(0.5s * var(--nav-speed));
+}
+
+/* The logo in the middle of the pill (click it to close) */
+.navbar__mid {
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  cursor: pointer;
+  opacity: 0;
+  filter: blur(6px);
+  transition:
+    opacity calc(0.3s * var(--nav-speed)) ease calc(0.8s * var(--nav-speed)),
+    filter calc(0.3s * var(--nav-speed)) ease calc(0.8s * var(--nav-speed));
+}
+
+.navbar--open .navbar__mid {
+  opacity: 1;
+  filter: blur(0);
+  transition:
+    opacity calc(0.45s * var(--nav-speed)) ease calc(0.25s * var(--nav-speed)),
+    filter calc(0.45s * var(--nav-speed)) ease calc(0.25s * var(--nav-speed));
+}
+
+.navbar__mid:hover svg {
+  filter: drop-shadow(0 0 8px rgba(91, 192, 255, 0.9));
+}
+
+.navbar__side {
+  display: flex;
+}
+
+.navbar__side--left {
+  justify-content: flex-end;
+}
+
+/* The buttons appear last, sliding out from the logo */
+.navbar__link {
+  position: relative;
+  padding: 12px clamp(8px, 1.6vw, 18px);
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--text-muted);
+  opacity: 0;
+  /* closing: the outer buttons leave first */
+  transition:
+    opacity calc(0.25s * var(--nav-speed)) ease calc((1 - var(--k)) * 0.06s * var(--nav-speed)),
+    translate calc(0.25s * var(--nav-speed)) ease,
+    color 0.25s ease;
+}
+
+.navbar__side--left .navbar__link {
+  translate: 24px 0;
+}
+
+.navbar__side--right .navbar__link {
+  translate: -24px 0;
+}
+
+.navbar--open .navbar__link {
+  opacity: 1;
+  translate: 0 0;
+  /* opening: the buttons nearest the logo appear first */
+  transition:
+    opacity calc(0.5s * var(--nav-speed)) ease calc((1.1s + var(--k) * 0.12s) * var(--nav-speed)),
+    translate calc(0.6s * var(--nav-speed)) cubic-bezier(0.16, 1, 0.3, 1) calc((1.1s + var(--k) * 0.12s) * var(--nav-speed)),
+    color 0.25s ease;
+}
+
+.navbar__link:hover,
+.navbar__link--active {
+  color: var(--text);
+}
+
+/* Short glowing line under the section you're in. Every button has one, but
+   it's squashed to nothing. The active button's line is drawn from left to
+   right, and draws again each time you click it. When another button takes
+   over, the old line wipes away toward the right. */
+.navbar__line {
+  position: absolute;
+  left: calc(50% - 9px);
+  bottom: 6px;
+  width: 18px;
+  height: 2px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--accent-orange), var(--accent-blue));
+  box-shadow: 0 0 10px rgba(91, 192, 255, 0.7);
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform calc(0.35s * var(--nav-speed)) ease;
+  pointer-events: none;
+}
+
+.navbar__link--active .navbar__line {
+  transform: scaleX(1);
+  transform-origin: left;
+  animation: navbar-draw calc(0.45s * var(--nav-speed)) cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+@keyframes navbar-draw {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+
+@media (max-width: 700px) {
+  .navbar__corner {
+    left: 14px;
+  }
+  .navbar__link {
+    padding: 12px 7px;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .navbar__pill,
+  .navbar__mid,
+  .navbar__link {
+    transition: none !important;
+  }
+  .navbar--visible .navbar__corner::after,
+  .navbar__link--active .navbar__line {
+    animation: none;
+  }
+  .navbar__line {
+    transition: none !important;
+  }
+}
+
+/* ------------------------------------------------------------------
+   Light / dark switch, top right (appears once the intro is over)
+   ------------------------------------------------------------------ */
+.navbar__theme {
+  position: fixed;
+  z-index: 100;
+  top: 14px;
+  right: 56px;
+  width: 56px;
+  height: 56px;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(22, 26, 32, 0.62);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  box-shadow:
+    0 18px 50px -20px rgba(91, 192, 255, 0.45),
+    -20px 10px 50px -30px rgba(255, 140, 26, 0.35);
+  color: var(--text);
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none; /* can't be used until the intro has finished */
+  transition: opacity 0.6s ease, transform 0.3s ease;
+}
+
+.navbar--visible .navbar__theme {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.navbar__theme:hover {
+  transform: scale(1.08);
+}
+
+.navbar__theme svg {
+  grid-area: 1 / 1;
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease;
+}
+
+/* Dark mode shows the sun (click for light); light mode shows the moon */
+:root[data-theme="dark"] .navbar__moon {
+  opacity: 0;
+  transform: rotate(-90deg) scale(0.4);
+}
+
+:root[data-theme="light"] .navbar__sun {
+  opacity: 0;
+  transform: rotate(90deg) scale(0.4);
+}
+
+@media (max-width: 700px) {
+  .navbar__theme {
+    top: 18px;
+    right: 14px;
+    width: 48px;
+    height: 48px;
+  }
+}

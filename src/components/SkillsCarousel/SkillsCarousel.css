@@ -1,0 +1,254 @@
+.skills-carousel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 28px;
+  padding: 40px 0;
+}
+
+.skills-carousel__stage {
+  position: relative;
+  width: 100%;
+  max-width: 900px;
+  height: 260px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  perspective: 1200px; /* gives the rotateY turn real depth instead of looking flat */
+}
+
+.skills-carousel__card {
+  position: absolute;
+  width: 180px;
+  height: 220px;
+  border-radius: 18px;
+
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  cursor: pointer;
+  user-select: none;
+
+  /* A longer, springier curve than a linear ease -- gives the carousel a
+     more "physical" feel instead of a mechanical slide. */
+  transition:
+    transform 0.55s cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 0.55s ease,
+    border-color 0.4s ease,
+    box-shadow 0.4s ease,
+    background 0.4s ease;
+}
+
+.skills-carousel__card--active {
+  border-color: rgba(91, 192, 255, 0.85);
+  box-shadow:
+    0 0 0 1px rgba(91, 192, 255, 0.25),
+    0 20px 50px -10px rgba(91, 192, 255, 0.35);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.skills-carousel__icon {
+  width: 52px;
+  height: 52px;
+  object-fit: contain;
+
+  /* Inactive icons sit desaturated and slightly dim -- the active one
+     "wakes up" to full color. Reads much cleaner than every icon
+     competing for attention at once. */
+  filter: grayscale(0.85) brightness(0.8);
+  transform: scale(0.92);
+  transition: filter 0.45s ease, transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.skills-carousel__card--active .skills-carousel__icon {
+  filter: grayscale(0) brightness(1);
+  transform: scale(1);
+}
+
+/* GitHub's devicon SVG is solid black -- invert it so it reads as white
+   against the dark card instead of disappearing. */
+.skills-carousel__icon--invert {
+  filter: grayscale(0.85) brightness(0.8) invert(1);
+}
+
+.skills-carousel__card--active .skills-carousel__icon--invert {
+  filter: grayscale(0) brightness(1) invert(1);
+}
+
+.skills-carousel__label {
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(234, 246, 255, 0.55);
+  letter-spacing: 0.02em;
+  transition: color 0.4s ease, font-size 0.4s ease;
+}
+
+.skills-carousel__card--active .skills-carousel__label {
+  color: #dcf0ff;
+  font-size: 16px;
+}
+
+.skills-carousel__controls {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+}
+
+.skills-carousel__nav-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 1px solid rgba(91, 192, 255, 0.5);
+  background: rgba(91, 192, 255, 0.08);
+  color: #5bc0ff;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
+}
+
+.skills-carousel__nav-btn:hover {
+  background: rgba(91, 192, 255, 0.2);
+  box-shadow: 0 0 16px rgba(91, 192, 255, 0.4);
+}
+
+.skills-carousel__nav-btn:active {
+  transform: scale(0.9);
+}
+
+.skills-carousel__dots {
+  display: flex;
+  gap: 8px;
+}
+
+.skills-carousel__dot {
+  width: 7px;
+  height: 7px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.25);
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.3s ease;
+}
+
+.skills-carousel__dot--active {
+  background: #5bc0ff;
+  transform: scale(1.3);
+}
+
+/* --- Entrance animation (--speed is set on #skills in Skills.css) --- */
+
+.skills-carousel__stage,
+.skills-carousel__controls,
+.skills-carousel__detail {
+  opacity: 0;
+  transform: translateY(24px);
+  transition:
+    opacity calc(0.35s * var(--speed, 1)) ease,
+    transform calc(0.35s * var(--speed, 1)) ease;
+}
+
+.skills-carousel__stage { --d: 0.1s; }
+.skills-carousel__controls { --d: 0.5s; }
+.skills-carousel__detail { --d: 0.7s; }
+
+.is-in .skills-carousel__stage,
+.is-in .skills-carousel__controls,
+.is-in .skills-carousel__detail {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity calc(0.7s * var(--speed, 1)) ease calc(var(--d) * var(--speed, 1)),
+    transform calc(0.8s * var(--speed, 1)) cubic-bezier(0.16, 1, 0.3, 1) calc(var(--d) * var(--speed, 1));
+}
+
+/* --- Detail panel under the carousel --- */
+
+.skills-carousel__detail {
+  width: 100%;
+  max-width: 640px;
+  min-height: 150px; /* keeps the page from jumping when the text length changes */
+  display: flex;
+  align-items: center; /* text sits in the middle, so any spare space splits top and bottom */
+  padding: 22px 30px;
+  text-align: center;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background:
+    linear-gradient(135deg, rgba(255, 140, 26, 0.07), rgba(91, 192, 255, 0.07)),
+    rgba(255, 255, 255, 0.04);
+  box-shadow: 0 24px 60px -28px rgba(91, 192, 255, 0.4);
+}
+
+.skills-carousel__detail-inner {
+  width: 100%;
+  animation: skills-swap 0.45s ease;
+}
+
+@keyframes skills-swap {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: none; }
+}
+
+.skills-carousel__detail h3 {
+  margin: 0 0 8px;
+  font-size: 20px;
+  color: var(--text);
+}
+
+.skills-carousel__detail p {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--text-muted);
+}
+
+.skills-carousel__used {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.skills-carousel__used small {
+  margin-right: 4px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.skills-carousel__chip {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1px solid rgba(91, 192, 255, 0.4);
+  color: var(--accent-blue);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skills-carousel__stage,
+  .skills-carousel__controls,
+  .skills-carousel__detail {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+  .skills-carousel__detail-inner {
+    animation: none;
+  }
+}

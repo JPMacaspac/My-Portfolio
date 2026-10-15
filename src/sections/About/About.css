@@ -1,0 +1,513 @@
+/* Lets the skill-box borders animate "how far around they're drawn".
+   (Supported in current Chrome, Edge, Safari and Firefox.) */
+@property --a {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+
+#about {
+  /* ANIMATION SPEED: every duration and delay below is multiplied by this.
+     1 = the original speed, 1.6 = a bit slower, 2.2 = much slower. */
+  --speed: 1.6;
+
+  position: relative;
+  scroll-margin-top: 90px;
+  min-height: 100vh;
+  background: #0d0d0f;
+  display: flex;
+  align-items: center;
+  padding: 100px 0 60px;
+}
+
+/* Soft glows behind the section. They fade out at the top and bottom
+   so there's no hard edge against the neighboring sections. */
+#about::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(620px 420px at 8% 20%, rgba(255, 140, 26, 0.1), transparent 70%),
+    radial-gradient(700px 420px at 95% 40%, rgba(91, 192, 255, 0.1), transparent 70%);
+  -webkit-mask-image: linear-gradient(transparent, #000 25%, #000 75%, transparent);
+  mask-image: linear-gradient(transparent, #000 25%, #000 75%, transparent);
+}
+
+.about__inner {
+  position: relative;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 60px;
+}
+
+.about__top {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  gap: 72px;
+}
+
+/* ------------------------------------------------------------------
+   Animation basics. Each block gets the class "is-in" while it is on
+   screen. Removing it plays the same transitions backwards, which is
+   the "out" animation.
+   ------------------------------------------------------------------ */
+
+/* Fade up, one after another (--i is set on each element in the JSX) */
+.about__rise {
+  opacity: 0;
+  transform: translateY(24px);
+  transition:
+    opacity calc(0.35s * var(--speed)) ease,
+    transform calc(0.35s * var(--speed)) ease;
+}
+
+.is-in .about__rise {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity calc(0.6s * var(--speed)) ease calc(var(--i, 0) * 90ms * var(--speed)),
+    transform calc(0.7s * var(--speed)) cubic-bezier(0.16, 1, 0.3, 1) calc(var(--i, 0) * 90ms * var(--speed));
+}
+
+.about__eyebrow {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  letter-spacing: 0.08em;
+  color: var(--accent-orange);
+  text-transform: uppercase;
+  margin: 0 0 12px;
+}
+
+.about__eyebrow--skills {
+  margin-top: 28px;
+}
+
+/* Heading slides up out of a hidden line, like a mask reveal */
+.about__heading {
+  overflow: hidden;
+  padding-bottom: 6px;
+  font-size: 40px;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0 0 14px;
+}
+
+.about__heading-inner {
+  display: block;
+  transform: translateY(110%);
+  transition: transform calc(0.35s * var(--speed)) ease;
+}
+
+.is-in .about__heading-inner {
+  transform: none;
+  transition: transform calc(0.8s * var(--speed)) cubic-bezier(0.16, 1, 0.3, 1) calc(0.1s * var(--speed));
+}
+
+.about__paragraph {
+  font-size: 16px;
+  line-height: 1.7;
+  color: var(--text-muted);
+  max-width: 56ch;
+  margin: 0 0 14px;
+}
+
+/* --- Skill boxes: the border draws itself from the top center, out to
+   the left and right at the same time, and meets at the bottom. --- */
+
+.about__skills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.about__skill-pill {
+  --pill-color: rgba(234, 246, 255, 0.35);
+  position: relative;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  color: var(--text);
+  border-radius: 8px;
+  padding: 10px 20px;
+}
+
+.about__skill-pill--accent {
+  --pill-color: var(--accent-orange);
+  color: var(--accent-orange);
+}
+
+.about__skill-pill::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 8px;
+  border: 1px solid var(--pill-color);
+  --a: 0deg;
+  /* Two masks: one reveals clockwise from the top, the other counter-
+     clockwise. Together they sweep both ways until they meet at the bottom. */
+  -webkit-mask-image:
+    conic-gradient(from 0deg, #000 var(--a), transparent 0),
+    conic-gradient(from calc(360deg - var(--a)), #000 var(--a), transparent 0);
+  mask-image:
+    conic-gradient(from 0deg, #000 var(--a), transparent 0),
+    conic-gradient(from calc(360deg - var(--a)), #000 var(--a), transparent 0);
+  transition: --a calc(0.4s * var(--speed)) ease;
+}
+
+.is-in .about__skill-pill::before {
+  --a: 182deg; /* a little past 180 so the two sweeps overlap with no seam */
+  transition: --a calc(0.9s * var(--speed)) cubic-bezier(0.65, 0, 0.35, 1) calc((0.55s + var(--i) * 90ms) * var(--speed));
+}
+
+.about__skill-text {
+  opacity: 0;
+  transition: opacity calc(0.25s * var(--speed)) ease;
+}
+
+.is-in .about__skill-text {
+  opacity: 1;
+  transition: opacity calc(0.5s * var(--speed)) ease calc((0.8s + var(--i) * 90ms) * var(--speed));
+}
+
+/* --- Education / Experience tabs --- */
+
+.about__tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.about__tab {
+  font: inherit;
+  font-size: 14px;
+  color: var(--text-muted);
+  background: none;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 999px;
+  padding: 8px 18px;
+  cursor: pointer;
+  transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+
+.about__tab:hover {
+  border-color: var(--accent-blue);
+}
+
+.about__tab--active {
+  color: var(--text);
+  border-color: var(--accent-blue);
+  background: rgba(91, 192, 255, 0.12);
+}
+
+/* --- Timeline: the line draws downward, each dot pops in as the line
+   reaches it, and each entry slides in from the left. --- */
+
+.about__timeline {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  position: relative;
+}
+
+.about__timeline::before {
+  content: "";
+  position: absolute;
+  left: 5px;
+  top: 10px;
+  bottom: 10px;
+  width: 1px;
+  background: rgba(234, 246, 255, 0.25);
+  transform: scaleY(0);
+  transform-origin: top;
+  transition: transform calc(0.35s * var(--speed)) ease;
+}
+
+.about__timeline--drawn::before {
+  transform: scaleY(1);
+  transition: transform calc(0.9s * var(--speed)) cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+.about__timeline-item {
+  position: relative;
+  padding: 14px 0 14px 32px;
+  opacity: 0;
+  transform: translateX(-14px);
+  transition:
+    opacity calc(0.3s * var(--speed)) ease,
+    transform calc(0.3s * var(--speed)) ease;
+}
+
+.about__timeline--drawn .about__timeline-item {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity calc(0.5s * var(--speed)) ease calc((0.2s + var(--i) * 0.2s) * var(--speed)),
+    transform calc(0.6s * var(--speed)) cubic-bezier(0.16, 1, 0.3, 1) calc((0.2s + var(--i) * 0.2s) * var(--speed));
+}
+
+.about__timeline-item::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 20px;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: #0d0d0f;
+  border: 2px solid var(--text);
+  transform: scale(0);
+  transition: transform calc(0.25s * var(--speed)) ease;
+}
+
+.about__timeline--drawn .about__timeline-item::before {
+  transform: scale(1);
+  transition: transform calc(0.45s * var(--speed)) cubic-bezier(0.34, 1.56, 0.64, 1) calc((0.15s + var(--i) * 0.2s) * var(--speed));
+}
+
+/* The first entry (most recent) gets a glowing blue dot */
+.about__timeline-item:first-child::before {
+  border-color: var(--accent-blue);
+  box-shadow: 0 0 10px rgba(91, 192, 255, 0.6);
+}
+
+.about__timeline-title {
+  display: block;
+  font-size: 15px;
+  color: var(--text);
+}
+
+.about__timeline-detail {
+  display: block;
+  margin-top: 4px;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+/* --- Design / Build / Tinker cards: they rise in one by one, and each
+   icon draws itself line by line. --- */
+
+.about__cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin-top: 72px;
+}
+
+.about__card {
+  padding: 26px;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.05);
+  opacity: 0;
+  transform: translateY(30px);
+  /* the hover lift uses `translate` so it doesn't fight the `transform` above */
+  transition:
+    opacity calc(0.35s * var(--speed)) ease,
+    transform calc(0.35s * var(--speed)) ease,
+    translate 0.25s ease,
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.is-in .about__card {
+  opacity: 1;
+  transform: none;
+  transition-property: opacity, transform, translate, border-color, box-shadow;
+  transition-duration: calc(0.6s * var(--speed)), calc(0.8s * var(--speed)), 0.25s, 0.25s, 0.25s;
+  transition-delay: calc(var(--i) * 120ms * var(--speed)), calc(var(--i) * 120ms * var(--speed)), 0s, 0s, 0s;
+  transition-timing-function: ease, cubic-bezier(0.16, 1, 0.3, 1), ease, ease, ease;
+}
+
+.about__card:hover {
+  translate: 0 -4px;
+  border-color: rgba(91, 192, 255, 0.5);
+  box-shadow: 0 18px 40px -20px rgba(91, 192, 255, 0.45);
+}
+
+.about__card svg {
+  width: 26px;
+  height: 26px;
+  fill: none;
+  stroke: var(--accent-blue);
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0;
+  transition: opacity calc(0.2s * var(--speed)) ease;
+}
+
+.about__card svg * {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  transition: stroke-dashoffset calc(0.4s * var(--speed)) ease;
+}
+
+.is-in .about__card svg {
+  opacity: 1;
+  transition: opacity calc(0.2s * var(--speed)) ease calc((0.3s + var(--i) * 120ms) * var(--speed));
+}
+
+.is-in .about__card svg * {
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset calc(1s * var(--speed)) ease calc((0.3s + var(--i) * 120ms) * var(--speed));
+}
+
+.about__card h3 {
+  margin: 16px 0 8px;
+  font-size: 18px;
+  color: var(--text);
+}
+
+.about__card p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--text-muted);
+}
+
+/* --- Closing banner: it opens up from the center, then its content fades in --- */
+
+.about__cta-wrap {
+  margin-top: 56px;
+}
+
+.about__cta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  padding: 28px 36px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background:
+    linear-gradient(135deg, rgba(255, 140, 26, 0.09), rgba(91, 192, 255, 0.09)),
+    rgba(255, 255, 255, 0.04);
+  box-shadow:
+    0 24px 60px -24px rgba(91, 192, 255, 0.4),
+    -24px 12px 60px -30px rgba(255, 140, 26, 0.3);
+  /* The negative top/bottom/side values at the end keep the glow from being clipped */
+  clip-path: inset(-100px 50% -100px 50% round 20px);
+  transition: clip-path calc(0.5s * var(--speed)) ease;
+}
+
+.about__cta-wrap.is-in .about__cta {
+  clip-path: inset(-100px -100px -100px -100px round 20px);
+  transition: clip-path calc(1s * var(--speed)) cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+.about__cta p,
+.about__cta-buttons {
+  opacity: 0;
+  transform: translateY(10px);
+  transition:
+    opacity calc(0.25s * var(--speed)) ease,
+    transform calc(0.25s * var(--speed)) ease;
+}
+
+.about__cta-wrap.is-in .about__cta p,
+.about__cta-wrap.is-in .about__cta-buttons {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity calc(0.6s * var(--speed)) ease calc(0.6s * var(--speed)),
+    transform calc(0.6s * var(--speed)) ease calc(0.6s * var(--speed));
+}
+
+.about__cta-wrap.is-in .about__cta-buttons {
+  transition-delay: calc(0.75s * var(--speed));
+}
+
+.about__cta p {
+  margin: 0;
+  max-width: 34ch;
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--text);
+}
+
+.about__cta-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.about__btn {
+  display: inline-flex;
+  padding: 12px 22px;
+  border-radius: 999px;
+  border: 1px solid rgba(234, 246, 255, 0.3);
+  color: var(--text);
+  text-decoration: none;
+  font-size: 14px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.about__btn:hover {
+  border-color: var(--accent-blue);
+}
+
+.about__btn--primary {
+  background: var(--accent-orange);
+  border-color: var(--accent-orange);
+  color: #1a1206;
+  font-weight: 600;
+}
+
+.about__btn--primary:hover {
+  border-color: var(--accent-orange);
+  box-shadow: 0 0 24px rgba(255, 140, 26, 0.45);
+}
+
+@media (max-width: 900px) {
+  .about__inner {
+    padding: 0 20px;
+  }
+  .about__top {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+  .about__cards {
+    grid-template-columns: 1fr;
+    margin-top: 48px;
+  }
+  .about__cta {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 24px 20px;
+  }
+}
+
+/* People who turn off motion in their system settings just see everything */
+@media (prefers-reduced-motion: reduce) {
+  .about__rise,
+  .about__heading-inner,
+  .about__skill-text,
+  .about__timeline-item,
+  .about__card,
+  .about__card svg,
+  .about__cta p,
+  .about__cta-buttons {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+  .about__skill-pill::before {
+    --a: 182deg !important;
+    transition: none !important;
+  }
+  .about__timeline::before,
+  .about__timeline-item::before {
+    transform: none !important;
+    transition: none !important;
+  }
+  .about__card svg * {
+    stroke-dashoffset: 0 !important;
+    transition: none !important;
+  }
+  .about__cta {
+    clip-path: none !important;
+    transition: none !important;
+  }
+}

@@ -1,0 +1,202 @@
+#projects {
+  /* ANIMATION SPEED: every duration and delay is multiplied by this.
+     1 = fast, 1.6 = a bit slower (same as About and Skills), 2.2 = much slower. */
+  --speed: 1.6;
+
+  position: relative;
+  isolation: isolate;
+  scroll-margin-top: 90px;
+  min-height: 100vh;
+  background: #0d0d0f;
+  padding: 100px 60px 80px;
+}
+
+/* Soft glows behind the section. They fade out at the top and bottom
+   so there's no hard edge against the neighboring sections. */
+#projects::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(640px 420px at 90% 12%, rgba(91, 192, 255, 0.1), transparent 70%),
+    radial-gradient(560px 380px at 6% 60%, rgba(255, 140, 26, 0.09), transparent 70%);
+  -webkit-mask-image: linear-gradient(transparent, #000 20%, #000 80%, transparent);
+  mask-image: linear-gradient(transparent, #000 20%, #000 80%, transparent);
+}
+
+.projects__header,
+.projects__gallery,
+.projects__more {
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.projects__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 24px;
+  margin-bottom: 36px;
+}
+
+/* Fade up, one after another (--i is set on each element in the JSX).
+   A block gets the class "is-in" while it's on screen; removing it plays
+   everything backwards, which is the "out" animation. */
+.projects__rise {
+  opacity: 0;
+  transform: translateY(24px);
+  transition:
+    opacity calc(0.35s * var(--speed)) ease,
+    transform calc(0.35s * var(--speed)) ease;
+}
+
+.is-in .projects__rise {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity calc(0.6s * var(--speed)) ease calc(var(--i, 0) * 90ms * var(--speed)),
+    transform calc(0.7s * var(--speed)) cubic-bezier(0.16, 1, 0.3, 1) calc(var(--i, 0) * 90ms * var(--speed));
+}
+
+.projects__eyebrow {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  letter-spacing: 0.08em;
+  color: var(--accent-orange);
+  text-transform: uppercase;
+  margin: 0 0 12px;
+}
+
+/* Heading slides up out of a hidden line, like a mask reveal */
+.projects__heading {
+  overflow: hidden;
+  padding-bottom: 6px;
+  font-size: 40px;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0;
+}
+
+.projects__heading-inner {
+  display: block;
+  transform: translateY(110%);
+  transition: transform calc(0.35s * var(--speed)) ease;
+}
+
+.is-in .projects__heading-inner {
+  transform: none;
+  transition: transform calc(0.8s * var(--speed)) cubic-bezier(0.16, 1, 0.3, 1) calc(0.1s * var(--speed));
+}
+
+/* --- Filter chips --- */
+
+.projects__filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.projects__filter {
+  font: inherit;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--text-muted);
+  background: none;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+
+.projects__filter:hover {
+  border-color: var(--accent-blue);
+}
+
+.projects__filter--active {
+  color: var(--text);
+  border-color: var(--accent-blue);
+  background: rgba(91, 192, 255, 0.12);
+}
+
+.projects__gallery {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px;
+}
+
+/* --- "Want to see more?" banner (only shown once GITHUB_URL is filled in) --- */
+
+.projects__more {
+  margin-top: 56px;
+}
+
+.projects__more-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  padding: 26px 34px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background:
+    linear-gradient(135deg, rgba(255, 140, 26, 0.09), rgba(91, 192, 255, 0.09)),
+    rgba(255, 255, 255, 0.04);
+  box-shadow:
+    0 24px 60px -24px rgba(91, 192, 255, 0.4),
+    -24px 12px 60px -30px rgba(255, 140, 26, 0.3);
+}
+
+.projects__more-card p {
+  margin: 0;
+  max-width: 34ch;
+  font-size: 19px;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--text);
+}
+
+.projects__btn {
+  display: inline-flex;
+  padding: 12px 22px;
+  border-radius: 999px;
+  border: 1px solid var(--accent-orange);
+  background: var(--accent-orange);
+  color: #1a1206;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: box-shadow 0.2s ease;
+}
+
+.projects__btn:hover {
+  box-shadow: 0 0 24px rgba(255, 140, 26, 0.45);
+}
+
+@media (max-width: 900px) {
+  #projects {
+    padding: 100px 20px 60px;
+  }
+  .projects__gallery {
+    grid-template-columns: 1fr;
+  }
+  .projects__more-card {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 24px 20px;
+  }
+}
+
+/* People who turn off motion in their system settings just see everything */
+@media (prefers-reduced-motion: reduce) {
+  .projects__rise,
+  .projects__heading-inner {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+}

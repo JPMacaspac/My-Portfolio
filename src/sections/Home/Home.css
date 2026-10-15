@@ -1,0 +1,491 @@
+/* Handwriting font for the signature. If it can't load, the browser falls
+   back to a generic cursive font. */
+@import url("https://fonts.googleapis.com/css2?family=Mrs+Saint+Delafield&display=swap");
+
+.home {
+  /* ANIMATION SPEED: every duration and delay is multiplied by this.
+     1 = fast, 1.6 = a bit slower (same as the other sections), 2.2 = much slower. */
+  --speed: 1.6;
+
+  position: relative;
+  min-height: 100svh;
+  background: #0d0d0f;
+  display: flex;
+  align-items: center;
+  /* Top padding reserves room for the fixed navbar */
+  padding: 100px 0 24px;
+  box-sizing: border-box;
+}
+
+/* Soft glows and a dot grid behind the hero. They fade out toward the
+   bottom so the next section starts clean, with no hard edge. */
+.home::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(560px 420px at 22% 55%, rgba(255, 140, 26, 0.14), transparent 70%),
+    radial-gradient(700px 420px at 88% 0%, rgba(91, 192, 255, 0.12), transparent 70%),
+    radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px) 0 0 / 32px 32px;
+  -webkit-mask-image: linear-gradient(#000 70%, transparent);
+  mask-image: linear-gradient(#000 70%, transparent);
+}
+
+.home__inner {
+  position: relative;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 60px;
+}
+
+.home__hero {
+  display: grid;
+  grid-template-columns: 0.85fr 1.15fr;
+  gap: 56px;
+  align-items: center;
+  min-height: 520px;
+}
+
+/* ------------------------------------------------------------------
+   Animation basics. Each block gets the class "is-in" while it is on
+   screen (and the intro is over). Removing it plays the same
+   transitions backwards, which is the "out" animation.
+   ------------------------------------------------------------------ */
+
+/* The photo slides in from the left */
+.home__photo {
+  display: block;
+  width: 100%;
+  max-width: 380px;
+  height: auto;
+  margin: 0 auto;
+  /* Softens the hard cut at the bottom of the cutout */
+  -webkit-mask-image: linear-gradient(#000 80%, transparent);
+  mask-image: linear-gradient(#000 80%, transparent);
+  opacity: 0;
+  transform: translateX(-44px) scale(0.96);
+  transition:
+    opacity calc(0.4s * var(--speed)) ease,
+    transform calc(0.4s * var(--speed)) ease;
+}
+
+.home__photo-wrap.is-in .home__photo {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity calc(0.9s * var(--speed)) ease,
+    transform calc(1s * var(--speed)) cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* The text items fade up one after another (--i is set in the JSX) */
+.home__rise {
+  opacity: 0;
+  transform: translateY(24px);
+  transition:
+    opacity calc(0.35s * var(--speed)) ease,
+    transform calc(0.35s * var(--speed)) ease;
+}
+
+.is-in .home__rise {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity calc(0.6s * var(--speed)) ease calc(var(--i, 0) * 90ms * var(--speed)),
+    transform calc(0.7s * var(--speed)) cubic-bezier(0.16, 1, 0.3, 1) calc(var(--i, 0) * 90ms * var(--speed));
+}
+
+.home__text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.home__text > * {
+  margin: 0;
+}
+
+.home__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--text);
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.home__badge i {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #4ade80;
+  animation: home-pulse 2s infinite;
+}
+
+@keyframes home-pulse {
+  0%   { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.6); }
+  70%, 100% { box-shadow: 0 0 0 8px rgba(74, 222, 128, 0); }
+}
+
+.home__eyebrow {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  letter-spacing: 0.08em;
+  color: var(--accent-orange);
+  text-transform: uppercase;
+}
+
+/* The heading slides up out of a hidden line, like a mask reveal */
+.home__heading {
+  overflow: hidden;
+  padding-bottom: 8px;
+  font-size: 56px;
+  line-height: 1.05;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.home__heading-inner {
+  display: block;
+  transform: translateY(110%);
+  transition: transform calc(0.35s * var(--speed)) ease;
+}
+
+.is-in .home__heading-inner {
+  transform: none;
+  transition: transform calc(0.8s * var(--speed)) cubic-bezier(0.16, 1, 0.3, 1) calc(0.2s * var(--speed));
+}
+
+.home__heading-name {
+  background: linear-gradient(90deg, var(--accent-orange), var(--accent-blue));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.home__role {
+  font-size: 22px;
+  color: var(--text-muted);
+}
+
+.home__role-text {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.home__caret {
+  display: inline-block;
+  width: 2px;
+  height: 1em;
+  margin-left: 3px;
+  vertical-align: -0.15em;
+  background: var(--accent-blue);
+  animation: home-blink 1s steps(1) infinite;
+}
+
+@keyframes home-blink {
+  50% { opacity: 0; }
+}
+
+.home__paragraph {
+  font-size: 16px;
+  line-height: 1.65;
+  color: var(--text-muted);
+  max-width: 52ch;
+}
+
+.home__cta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.home__btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 12px 22px;
+  border-radius: 999px;
+  border: 1px solid rgba(234, 246, 255, 0.3);
+  color: var(--text);
+  text-decoration: none;
+  font-size: 14px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.home__btn:hover {
+  border-color: var(--accent-blue);
+}
+
+.home__btn--primary {
+  background: var(--accent-orange);
+  border-color: var(--accent-orange);
+  color: #1a1206;
+  font-weight: 600;
+}
+
+.home__btn--primary:hover {
+  border-color: var(--accent-orange);
+  box-shadow: 0 0 24px rgba(255, 140, 26, 0.45);
+}
+
+.home__social {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.home__social > span {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-right: 6px;
+}
+
+.home__social a {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: var(--text);
+  text-decoration: none;
+  transition: translate 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.home__social a:hover {
+  translate: 0 -3px;
+  border-color: var(--accent-blue);
+  box-shadow: 0 0 16px rgba(91, 192, 255, 0.4);
+}
+
+.home__social svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* --- Motto / stats / signature strip --- */
+
+.home__strip {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1.2fr 1fr auto;
+  gap: 40px;
+  align-items: center;
+  margin-top: 32px;
+  padding: 28px 36px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  /* Glass card with a faint orange-to-blue tint, so the strip no longer
+     disappears into the dark background */
+  background:
+    linear-gradient(135deg, rgba(255, 140, 26, 0.09), rgba(91, 192, 255, 0.09)),
+    rgba(255, 255, 255, 0.04);
+  /* Soft colored glow: blue underneath, a touch of orange on the left */
+  box-shadow:
+    0 24px 60px -24px rgba(91, 192, 255, 0.4),
+    -24px 12px 60px -30px rgba(255, 140, 26, 0.3);
+  /* The card rises in, then its three parts fade up one by one */
+  opacity: 0;
+  transform: translateY(30px);
+  transition:
+    opacity calc(0.35s * var(--speed)) ease,
+    transform calc(0.35s * var(--speed)) ease;
+}
+
+.home__strip.is-in {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity calc(0.8s * var(--speed)) ease,
+    transform calc(0.9s * var(--speed)) cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Thin glowing line along the top edge of the card */
+.home__strip::before {
+  content: "";
+  position: absolute;
+  top: -1px;
+  left: 12%;
+  right: 12%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--accent-orange), var(--accent-blue), transparent);
+  box-shadow: 0 0 12px rgba(91, 192, 255, 0.6);
+}
+
+.home__strip > * {
+  opacity: 0;
+  transform: translateY(14px);
+  transition:
+    opacity calc(0.3s * var(--speed)) ease,
+    transform calc(0.3s * var(--speed)) ease;
+}
+
+.home__strip > :nth-child(1) { --k: 0; }
+.home__strip > :nth-child(2) { --k: 1; }
+.home__strip > :nth-child(3) { --k: 2; }
+
+.home__strip.is-in > * {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity calc(0.6s * var(--speed)) ease calc((0.25s + var(--k) * 0.12s) * var(--speed)),
+    transform calc(0.7s * var(--speed)) cubic-bezier(0.16, 1, 0.3, 1) calc((0.25s + var(--k) * 0.12s) * var(--speed));
+}
+
+.home__motto {
+  margin: 0;
+  padding-left: 16px;
+  border-left: 2px solid var(--accent-orange);
+  font-size: 18px;
+  line-height: 1.5;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.home__motto cite {
+  display: block;
+  margin-top: 6px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  font-style: normal;
+}
+
+.home__stats {
+  display: flex;
+  gap: 40px;
+}
+
+/* Each number sits centered above its label */
+.home__stats > div {
+  text-align: center;
+}
+
+.home__stats b {
+  display: block;
+  font-size: 28px;
+  line-height: 1;
+  margin-bottom: 6px;
+  color: var(--text);
+}
+
+.home__stats span {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.home__sign {
+  text-align: right;
+}
+
+/* The signature starts hidden and is written left to right each time the
+   card comes on screen. The negative clip-path values let the tall
+   handwriting flourishes stick out past the text box instead of being cut off. */
+.home__sig {
+  display: inline-block;
+  padding: 14px 18px;
+  font-family: "Mrs Saint Delafield", "Brush Script MT", cursive;
+  font-size: 60px;
+  line-height: 1.2;
+  color: var(--text);
+  clip-path: inset(-40% 100% -40% -10%);
+}
+
+.home__strip.is-in .home__sig {
+  animation: home-sig-write calc(2.4s * var(--speed)) ease-out calc(0.7s * var(--speed)) forwards;
+}
+
+@keyframes home-sig-write {
+  to { clip-path: inset(-40% -10% -40% -10%); }
+}
+
+/* Caption under the signature. It swaps between roles with a glitch. */
+.home__sign-role {
+  display: block;
+  margin-top: -6px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.home__sign-role--glitch {
+  color: var(--text);
+  text-shadow: 2px 0 rgba(255, 70, 100, 0.75), -2px 0 rgba(91, 192, 255, 0.85);
+  animation: home-glitch 0.4s steps(2, end) infinite;
+}
+
+@keyframes home-glitch {
+  0%   { transform: translate(0, 0); }
+  20%  { transform: translate(-2px, 1px); }
+  40%  { transform: translate(2px, -1px); }
+  60%  { transform: translate(-1px, 0); }
+  80%  { transform: translate(1px, 1px); }
+  100% { transform: translate(0, 0); }
+}
+
+@media (max-width: 900px) {
+  .home__inner {
+    padding: 0 20px;
+  }
+  .home__hero {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  .home__photo {
+    max-width: 260px;
+  }
+  .home__heading {
+    font-size: 44px;
+  }
+  .home__strip {
+    grid-template-columns: 1fr;
+    gap: 24px;
+    padding: 24px 20px;
+  }
+  .home__sign {
+    text-align: left;
+  }
+}
+
+/* People who turn off motion in their system settings just see everything */
+@media (prefers-reduced-motion: reduce) {
+  .home__photo,
+  .home__rise,
+  .home__heading-inner,
+  .home__strip,
+  .home__strip > * {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+  .home__sig {
+    clip-path: none;
+  }
+  .home__strip.is-in .home__sig,
+  .home__badge i,
+  .home__caret,
+  .home__sign-role--glitch {
+    animation: none;
+  }
+}

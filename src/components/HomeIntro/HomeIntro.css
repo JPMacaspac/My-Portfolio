@@ -1,0 +1,344 @@
+/* Tiny animation helpers. Each element sets --d (delay) and --t (duration)
+   in seconds; everything is stretched by --intro-speed (set from HomeIntro.jsx). */
+.hi-fi,
+.hi-fu,
+.hi-ml,
+.hi-dr {
+  animation-duration: calc(var(--t, 0.6s) * var(--intro-speed, 1));
+  animation-delay: calc(var(--d, 0s) * var(--intro-speed, 1));
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  animation-fill-mode: both;
+}
+
+.hi-fi { opacity: 0; animation-name: hi-fade; }
+.hi-fu { opacity: 0; animation-name: hi-rise; }
+.hi-ml { transform: translateY(112%); animation-name: hi-mask; }
+.hi-dr { stroke-dashoffset: 1; animation-name: hi-draw; animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1); }
+
+@keyframes hi-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes hi-rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+@keyframes hi-mask { from { transform: translateY(112%); } to { transform: none; } }
+@keyframes hi-draw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+
+/* ------------------------------------------------------------------
+   The overlay
+   ------------------------------------------------------------------ */
+
+.home-intro {
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  color: var(--text, #eaf6ff);
+}
+
+.home-intro--exit {
+  pointer-events: none;
+}
+
+/* Two halves of the screen that slide apart at the end */
+.home-intro__cur {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 50.2%;
+  background: #050506;
+  z-index: 60;
+  transition: transform calc(1s * var(--intro-speed)) cubic-bezier(0.76, 0, 0.24, 1) calc(0.35s * var(--intro-speed));
+}
+
+.home-intro__cur--top { top: 0; }
+.home-intro__cur--bottom { bottom: 0; }
+.home-intro--exit .home-intro__cur--top { transform: translateY(-100%); }
+.home-intro--exit .home-intro__cur--bottom { transform: translateY(100%); }
+
+/* A light line that sweeps across the middle just before the split */
+.home-intro__seam {
+  position: absolute;
+  z-index: 65;
+  left: 50%;
+  top: 50%;
+  height: 2px;
+  width: 0;
+  translate: -50% -50%;
+  background: linear-gradient(90deg, transparent, var(--accent-blue, #5bc0ff), transparent);
+  box-shadow: 0 0 18px var(--accent-blue, #5bc0ff);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.home-intro--exit .home-intro__seam {
+  animation: hi-seam calc(0.9s * var(--intro-speed)) ease both;
+}
+
+@keyframes hi-seam {
+  0%   { width: 0; opacity: 1; }
+  55%  { width: 100vw; opacity: 1; }
+  100% { width: 100vw; opacity: 0; }
+}
+
+/* Everything on top of the halves; it all fades out when the ending starts */
+.home-intro__fx {
+  position: absolute;
+  inset: 0;
+  z-index: 70;
+  pointer-events: none;
+  transition: opacity calc(0.45s * var(--intro-speed)) ease;
+}
+
+.home-intro--exit .home-intro__fx {
+  opacity: 0;
+}
+
+.home-intro__grid {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(rgba(255, 255, 255, 0.09) 1px, transparent 1px) 0 0 / 32px 32px;
+  -webkit-mask-image: radial-gradient(circle at 50% 50%, #000 10%, transparent 70%);
+  mask-image: radial-gradient(circle at 50% 50%, #000 10%, transparent 70%);
+}
+
+.home-intro__glow {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse 80% 60% at 50% 100%,
+    rgba(91, 192, 255, 0.35) 0%,
+    rgba(13, 37, 46, 0.4) 45%,
+    transparent 75%
+  );
+  animation: hi-glow calc(1.2s * var(--intro-speed)) ease calc(0.2s * var(--intro-speed)) both;
+}
+
+@keyframes hi-glow {
+  from { opacity: 0; transform: translateY(15%); }
+  to   { opacity: 1; transform: none; }
+}
+
+.home-intro__syms span {
+  position: absolute;
+  font-family: var(--font-mono, ui-monospace, Consolas, monospace);
+  color: rgba(91, 192, 255, 0.28);
+  animation: hi-float 7s ease-in-out infinite alternate;
+}
+
+@keyframes hi-float {
+  from { transform: translateY(0); }
+  to   { transform: translateY(-18px); }
+}
+
+/* --- name and roles under the logo --- */
+
+.home-intro__stage {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(50% + 100px);
+  text-align: center;
+}
+
+.home-intro__name {
+  display: inline-block;
+  overflow: hidden;
+  padding: 2px 0 6px;
+  font-size: clamp(20px, 3.2vw, 30px);
+  font-weight: 700;
+  letter-spacing: 0.34em;
+  margin-right: -0.34em;
+}
+
+.home-intro__name i {
+  display: inline-block;
+  font-style: normal;
+}
+
+.home-intro__role {
+  margin-top: 10px;
+  height: 18px;
+  font-family: var(--font-mono, ui-monospace, Consolas, monospace);
+  font-size: 13px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent-blue, #5bc0ff);
+}
+
+/* --- label, log, percent and the bar along the bottom --- */
+
+.home-intro__hud {
+  position: absolute;
+  top: 24px;
+  left: 28px;
+  right: 28px;
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-mono, ui-monospace, Consolas, monospace);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted, #9ca3af);
+}
+
+.home-intro__hud b {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  margin-right: 8px;
+  border-radius: 50%;
+  background: #4ade80;
+  animation: hi-blink 1.2s steps(1) infinite;
+}
+
+@keyframes hi-blink {
+  50% { opacity: 0.25; }
+}
+
+.home-intro__log {
+  position: absolute;
+  left: 28px;
+  bottom: 34px;
+  font-family: var(--font-mono, ui-monospace, Consolas, monospace);
+  font-size: 12px;
+  line-height: 1.7;
+  color: var(--text-muted, #9ca3af);
+}
+
+.home-intro__log div {
+  animation: hi-rise 0.4s ease both;
+}
+
+.home-intro__log em {
+  margin-left: 8px;
+  font-style: normal;
+  color: #4ade80;
+}
+
+.home-intro__pct {
+  position: absolute;
+  right: 28px;
+  bottom: 26px;
+  font-family: var(--font-mono, ui-monospace, Consolas, monospace);
+  font-size: clamp(34px, 5vw, 54px);
+  line-height: 1;
+  color: var(--text, #eaf6ff);
+}
+
+.home-intro__pct small {
+  margin-left: 3px;
+  font-size: 0.4em;
+  color: var(--accent-blue, #5bc0ff);
+}
+
+.home-intro__bar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.home-intro__bar i {
+  position: absolute;
+  inset: 0;
+  transform-origin: left;
+  transform: scaleX(0);
+  background: linear-gradient(90deg, var(--accent-orange, #ff8c1a), var(--accent-blue, #5bc0ff));
+  box-shadow: 0 0 14px rgba(91, 192, 255, 0.8);
+}
+
+/* ------------------------------------------------------------------
+   The logo: drawn in the middle, then it flies to the navbar's logo slot
+   (the position comes from the --move-x/--move-y/--move-scale values
+   that HomeIntro.jsx measures right before the flight).
+   ------------------------------------------------------------------ */
+
+.home-intro__logo {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  z-index: 9999;
+  width: 140px;
+  height: 140px;
+  overflow: visible;
+  transform: translate(-50%, -50%);
+  /* Decorative only: clicks pass through to the real menu button underneath */
+  pointer-events: none;
+  filter: blur(0px);
+  transition:
+    transform calc(0.9s * var(--intro-speed, 1)) cubic-bezier(0.22, 0.9, 0.34, 1) calc(0.2s * var(--intro-speed, 1)),
+    opacity calc(0.4s * var(--nav-speed, 1.5)) ease calc(0.85s * var(--nav-speed, 1.5)),
+    filter calc(0.4s * var(--nav-speed, 1.5)) ease calc(0.85s * var(--nav-speed, 1.5));
+}
+
+.home-intro__logo--move {
+  transform: translate(-50%, -50%)
+    translate(var(--move-x, 0px), var(--move-y, 0px))
+    scale(var(--move-scale, 0.3));
+}
+
+.home-intro__brackets {
+  filter: drop-shadow(0 0 8px rgba(91, 192, 255, 0.75));
+}
+
+.home-intro__ring {
+  transform-origin: 100px 100px;
+  animation: hi-spin calc(14s * var(--intro-speed, 1)) linear infinite;
+  transition: opacity calc(0.4s * var(--intro-speed, 1)) ease;
+}
+
+.home-intro__logo--exit .home-intro__ring {
+  opacity: 0;
+}
+
+@keyframes hi-spin {
+  to { rotate: 360deg; }
+}
+
+/* When the navbar menu opens, this logo fades out in place (and fades back in
+   when it closes). It must not be scaled here: the logo's position comes from
+   `transform`, and scaling would drag it toward the middle of the screen.
+   Navbar.jsx sets the data-nav-open flag on the page. */
+html[data-nav-open="true"] .home-intro__logo {
+  opacity: 0;
+  filter: blur(6px);
+  transition:
+    transform calc(0.9s * var(--intro-speed, 1)) cubic-bezier(0.22, 0.9, 0.34, 1),
+    opacity calc(0.35s * var(--nav-speed, 1.5)) ease,
+    filter calc(0.35s * var(--nav-speed, 1.5)) ease;
+}
+
+@media (max-width: 700px) {
+  .home-intro__name {
+    font-size: 16px;
+    letter-spacing: 0.2em;
+    margin-right: -0.2em;
+  }
+  .home-intro__log {
+    display: none;
+  }
+  .home-intro__hud {
+    left: 16px;
+    right: 16px;
+  }
+  .home-intro__pct {
+    right: 16px;
+  }
+}
+
+/* People who turn off motion in their system settings get a short, still intro */
+@media (prefers-reduced-motion: reduce) {
+  .hi-fi, .hi-fu { opacity: 1; animation: none; }
+  .hi-ml { transform: none; animation: none; }
+  .hi-dr { stroke-dashoffset: 0; animation: none; }
+  .home-intro__glow,
+  .home-intro__ring,
+  .home-intro__syms span,
+  .home-intro__hud b,
+  .home-intro--exit .home-intro__seam {
+    animation: none;
+  }
+  .home-intro__cur,
+  .home-intro__fx,
+  .home-intro__logo {
+    transition: none;
+  }
+}

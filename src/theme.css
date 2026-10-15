@@ -1,0 +1,495 @@
+/* ==================================================================
+   LIGHT MODE
+   Dark mode is untouched: it's the styling already in every component's
+   own CSS file. This file only adds the light look. Every rule starts with
+   :root[data-theme="light"], so it only applies while light mode is on.
+   Change the colors in the two palette blocks below.
+   ================================================================== */
+
+/* The intro overlay always stays dark, so give it dark-mode colors no
+   matter which theme is on. */
+.home-intro {
+  --text: #eaf6ff;
+  --text-muted: #9ca3af;
+  --accent-blue: #5bc0ff;
+  --accent-orange: #ff8c1a;
+}
+
+/* The logo that lands in the corner changes color with the theme */
+.home-intro__brackets,
+.home-intro__logo text {
+  transition: stroke 0.8s ease 0.3s, fill 0.8s ease 0.3s;
+}
+
+/* ---- switching animation ---- */
+/* Browsers that support it spread the new colors out as a circle from the
+   toggle button. (theme.js sets the position and size of the circle.) */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+::view-transition-new(root) {
+  animation: theme-reveal 0.9s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+@keyframes theme-reveal {
+  from { clip-path: circle(0 at var(--theme-x) var(--theme-y)); }
+  to   { clip-path: circle(var(--theme-r) at var(--theme-x) var(--theme-y)); }
+}
+
+/* Other browsers get a short color fade instead */
+.theme-swap * {
+  transition:
+    background-color 0.5s ease,
+    color 0.5s ease,
+    border-color 0.5s ease,
+    box-shadow 0.5s ease !important;
+}
+
+/* ==================================================================
+   PALETTE 1: STEEL
+   Cool gray page, white cards, dark graphite navbar and highlight blocks.
+   ================================================================== */
+:root[data-theme="light"][data-palette="steel"] {
+  color-scheme: light;
+  --bg: #d8dee6;
+  --text: #0b1220;
+  --text-muted: #434d5d;
+  --accent-orange: #ff7a1a;
+  --accent-blue: #0b62c9;
+  --eyebrow: #c2410c;           /* small orange text (darker so it's readable) */
+  --card: #eef1f5;
+  --card-solid: #eef1f5;
+  --line: #b7c1cf;
+  --line-strong: #8d99ab;
+  --soft: rgba(11, 98, 201, 0.12);
+  --block-bg: #0c121e;          /* the dark highlight blocks */
+  --block-text: #eaf2ff;
+  --block-muted: #9aa7ba;
+  --block-shadow: 0 18px 40px -18px rgba(11, 18, 32, 0.55);
+  --card-shadow: 0 1px 0 rgba(11, 18, 32, 0.04), 0 12px 28px -20px rgba(11, 18, 32, 0.45);
+  --hover-glow: 0 18px 36px -18px rgba(11, 18, 32, 0.5);
+  --pill-bg: rgba(12, 18, 30, 0.92);
+  --pill-text: #aab4c3;
+  --pill-active: #ffffff;
+  --pill-jp: #7fb6ff;
+  --pill-line: #4aa3ff;
+  --glow-a: rgba(11, 98, 201, 0.07);
+  --glow-b: rgba(11, 18, 32, 0.06);
+  --dot: rgba(11, 18, 32, 0.1);
+  --lines: none;
+  --scroll-thumb: rgba(11, 18, 32, 0.28);
+  --r-card: 14px;
+  --r-block: 20px;
+  --r-btn: 999px;
+  --r-pill: 999px;
+  --r-toggle: 50%;
+}
+
+/* ==================================================================
+   PALETTE 2: BLUEPRINT
+   Crisp white and navy, sharper corners, a faint graph-paper grid.
+   To use it, set LIGHT_PALETTE to "blueprint" in theme.js.
+   ================================================================== */
+:root[data-theme="light"][data-palette="blueprint"] {
+  color-scheme: light;
+  --bg: #e3e8f0;
+  --text: #0a1530;
+  --text-muted: #47536b;
+  --accent-orange: #ff6a00;
+  --accent-blue: #0047e0;
+  --eyebrow: #d24a00;
+  --card: #f5f7fb;
+  --card-solid: #f5f7fb;
+  --line: rgba(10, 21, 48, 0.28);
+  --line-strong: rgba(10, 21, 48, 0.45);
+  --soft: rgba(0, 71, 224, 0.1);
+  --block-bg: #0a1b4d;
+  --block-text: #f2f6ff;
+  --block-muted: #9fb2de;
+  --block-shadow: 0 10px 24px -14px rgba(10, 21, 48, 0.5);
+  --card-shadow: 0 2px 0 rgba(10, 21, 48, 0.14);
+  --hover-glow: 0 10px 22px -12px rgba(10, 21, 48, 0.5);
+  --pill-bg: rgba(245, 247, 251, 0.94);
+  --pill-text: #47536b;
+  --pill-active: #0a1530;
+  --pill-jp: #0047e0;
+  --pill-line: #0047e0;
+  --glow-a: rgba(0, 71, 224, 0.04);
+  --glow-b: rgba(0, 71, 224, 0.04);
+  --dot: rgba(10, 21, 48, 0.12);
+  --lines: linear-gradient(rgba(0, 71, 224, 0.07) 1px, transparent 1px),
+           linear-gradient(90deg, rgba(0, 71, 224, 0.07) 1px, transparent 1px);
+  --scroll-thumb: rgba(10, 21, 48, 0.3);
+  --r-card: 8px;
+  --r-block: 10px;
+  --r-btn: 8px;
+  --r-pill: 12px;
+  --r-toggle: 12px;
+}
+
+/* ==================================================================
+   Component colors in light mode
+   ================================================================== */
+:root[data-theme="light"] .home,
+:root[data-theme="light"] #about,
+:root[data-theme="light"] #skills,
+:root[data-theme="light"] #projects {
+  background-color: var(--bg);
+  background-image: var(--lines);
+  background-size: 40px 40px;
+}
+
+:root[data-theme="light"] .home::before {
+  background: radial-gradient(560px 420px at 22% 55%, var(--glow-a), transparent 70%), radial-gradient(700px 420px at 88% 0%, var(--glow-b), transparent 70%), radial-gradient(var(--dot) 1px, transparent 1px) 0 0 / 32px 32px;
+}
+
+:root[data-theme="light"] #about::before {
+  background: radial-gradient(620px 420px at 8% 20%, var(--glow-a), transparent 70%), radial-gradient(700px 420px at 95% 40%, var(--glow-b), transparent 70%);
+}
+
+:root[data-theme="light"] #skills::before {
+  background: radial-gradient(700px 440px at 50% 38%, var(--glow-b), transparent 70%), radial-gradient(520px 360px at 12% 85%, var(--glow-a), transparent 70%);
+}
+
+:root[data-theme="light"] #projects::before {
+  background: radial-gradient(640px 420px at 90% 12%, var(--glow-b), transparent 70%), radial-gradient(560px 380px at 6% 60%, var(--glow-a), transparent 70%);
+}
+
+:root[data-theme="light"] .home__eyebrow,
+:root[data-theme="light"] .about__eyebrow,
+:root[data-theme="light"] .skills__eyebrow,
+:root[data-theme="light"] .projects__eyebrow {
+  color: var(--eyebrow);
+}
+
+:root[data-theme="light"] .navbar__pill {
+  border-color: var(--line);
+  background: var(--pill-bg);
+  box-shadow: var(--block-shadow);
+  border-radius: var(--r-pill);
+}
+
+:root[data-theme="light"] .navbar__link {
+  color: var(--pill-text);
+}
+
+:root[data-theme="light"] .navbar__link:hover,
+:root[data-theme="light"] .navbar__link--active {
+  color: var(--pill-active);
+}
+
+:root[data-theme="light"] .navbar__line {
+  background: linear-gradient(90deg, var(--accent-orange), var(--pill-line));
+}
+
+:root[data-theme="light"] .navbar__mid svg {
+  stroke: var(--pill-active);
+}
+
+:root[data-theme="light"] .navbar__mid svg text {
+  fill: var(--pill-jp);
+}
+
+:root[data-theme="light"] .navbar__theme {
+  border-color: var(--line);
+  background: var(--pill-bg);
+  box-shadow: var(--block-shadow);
+  color: var(--pill-active);
+  border-radius: var(--r-toggle);
+}
+
+:root[data-theme="light"] .home-intro__logo--move .home-intro__brackets {
+  stroke: var(--text);
+}
+
+:root[data-theme="light"] .home-intro__logo--move text {
+  fill: var(--accent-blue);
+}
+
+:root[data-theme="light"] .home__badge {
+  border-color: var(--line);
+  background: var(--card);
+  border-radius: var(--r-btn);
+}
+
+:root[data-theme="light"] .home__btn {
+  border-color: var(--line-strong);
+  border-radius: var(--r-btn);
+}
+
+:root[data-theme="light"] .home__btn:hover {
+  border-color: var(--accent-blue);
+}
+
+:root[data-theme="light"] .home__btn--primary,
+:root[data-theme="light"] .home__btn--primary:hover {
+  border-color: var(--accent-orange);
+}
+
+:root[data-theme="light"] .home__social a {
+  border-color: var(--line);
+  color: var(--text);
+}
+
+:root[data-theme="light"] .home__social a:hover {
+  border-color: var(--accent-blue);
+}
+
+:root[data-theme="light"] .home__strip {
+  border-color: var(--line);
+  background: var(--block-bg);
+  box-shadow: var(--block-shadow);
+  border-radius: var(--r-block);
+}
+
+:root[data-theme="light"] .home__motto,
+:root[data-theme="light"] .home__stats b,
+:root[data-theme="light"] .home__sig,
+:root[data-theme="light"] .home__sign-role--glitch {
+  color: var(--block-text);
+}
+
+:root[data-theme="light"] .home__motto cite,
+:root[data-theme="light"] .home__stats span,
+:root[data-theme="light"] .home__sign-role {
+  color: var(--block-muted);
+}
+
+:root[data-theme="light"] .home__sign-role--glitch {
+  color: var(--block-text);
+  text-shadow: 2px 0 rgba(255, 70, 100, 0.75), -2px 0 rgba(91, 192, 255, 0.85);
+}
+
+:root[data-theme="light"] .about__skill-pill {
+  border-color: var(--line-strong);
+}
+
+:root[data-theme="light"] .about__skill-pill--accent {
+  border-color: var(--accent-orange);
+  color: var(--eyebrow);
+}
+
+:root[data-theme="light"] .about__tab {
+  border-color: var(--line);
+  border-radius: var(--r-btn);
+}
+
+:root[data-theme="light"] .about__tab:hover {
+  border-color: var(--accent-blue);
+}
+
+:root[data-theme="light"] .about__tab--active {
+  color: var(--text);
+  border-color: var(--accent-blue);
+  background: var(--soft);
+}
+
+:root[data-theme="light"] .about__timeline::before {
+  background: var(--line-strong);
+}
+
+:root[data-theme="light"] .about__timeline-item::before {
+  background: var(--bg);
+  border-color: var(--text);
+}
+
+:root[data-theme="light"] .about__timeline-item:first-child::before {
+  border-color: var(--accent-blue);
+}
+
+:root[data-theme="light"] .about__card {
+  border-color: var(--line);
+  background: var(--card);
+  box-shadow: var(--card-shadow);
+  border-radius: var(--r-card);
+}
+
+:root[data-theme="light"] .about__card:hover {
+  border-color: var(--accent-blue);
+  box-shadow: var(--hover-glow);
+}
+
+:root[data-theme="light"] .about__cta,
+:root[data-theme="light"] .projects__more-card {
+  border-color: var(--line);
+  background: var(--block-bg);
+  box-shadow: var(--block-shadow);
+  border-radius: var(--r-block);
+}
+
+:root[data-theme="light"] .about__cta p,
+:root[data-theme="light"] .projects__more-card p {
+  color: var(--block-text);
+}
+
+:root[data-theme="light"] .about__btn {
+  color: var(--block-text);
+  border-color: var(--block-muted);
+  border-radius: var(--r-btn);
+}
+
+:root[data-theme="light"] .about__btn:hover {
+  border-color: var(--accent-blue);
+}
+
+:root[data-theme="light"] .about__btn--primary,
+:root[data-theme="light"] .about__btn--primary:hover {
+  color: #1a1206;
+  border-color: var(--accent-orange);
+}
+
+:root[data-theme="light"] .skills__chip {
+  border-color: var(--line);
+}
+
+:root[data-theme="light"] .skills__chip:hover {
+  border-color: var(--accent-blue);
+}
+
+:root[data-theme="light"] .skills-carousel__card {
+  border-color: var(--line);
+  background: var(--card);
+  box-shadow: var(--card-shadow);
+  border-radius: var(--r-card);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+:root[data-theme="light"] .skills-carousel__card--active {
+  border-color: var(--accent-blue);
+  background: var(--card);
+  box-shadow: 0 20px 50px -14px color-mix(in srgb, var(--accent-blue) 45%, transparent);
+}
+
+:root[data-theme="light"] .skills-carousel__label {
+  color: var(--text-muted);
+}
+
+:root[data-theme="light"] .skills-carousel__card--active .skills-carousel__label {
+  color: var(--text);
+}
+
+:root[data-theme="light"] .skills-carousel__icon--invert {
+  filter: grayscale(0.85) brightness(0.8);
+}
+
+:root[data-theme="light"] .skills-carousel__card--active .skills-carousel__icon--invert {
+  filter: none;
+}
+
+:root[data-theme="light"] .skills-carousel__nav-btn {
+  border-color: color-mix(in srgb, var(--accent-blue) 55%, transparent);
+  background: color-mix(in srgb, var(--accent-blue) 8%, transparent);
+  color: var(--accent-blue);
+}
+
+:root[data-theme="light"] .skills-carousel__nav-btn:hover {
+  background: color-mix(in srgb, var(--accent-blue) 18%, transparent);
+}
+
+:root[data-theme="light"] .skills-carousel__dot {
+  background: var(--line-strong);
+}
+
+:root[data-theme="light"] .skills-carousel__dot--active {
+  background: var(--accent-blue);
+}
+
+:root[data-theme="light"] .skills-carousel__detail {
+  border-color: var(--line);
+  background: var(--card);
+  box-shadow: var(--card-shadow);
+  border-radius: var(--r-card);
+}
+
+:root[data-theme="light"] .skills-carousel__chip {
+  border-color: color-mix(in srgb, var(--accent-blue) 45%, transparent);
+}
+
+:root[data-theme="light"] .projects__filter {
+  border-color: var(--line);
+  border-radius: var(--r-btn);
+}
+
+:root[data-theme="light"] .projects__filter:hover {
+  border-color: var(--accent-blue);
+}
+
+:root[data-theme="light"] .projects__filter--active {
+  color: var(--text);
+  border-color: var(--accent-blue);
+  background: var(--soft);
+}
+
+:root[data-theme="light"] .project-card {
+  border-color: var(--line);
+  background: var(--card);
+  box-shadow: var(--card-shadow);
+  border-radius: var(--r-card);
+}
+
+:root[data-theme="light"] .project-card:hover,
+:root[data-theme="light"] .project-card:focus-visible {
+  border-color: var(--accent-blue);
+  box-shadow: var(--hover-glow);
+}
+
+:root[data-theme="light"] .project-card__tag,
+:root[data-theme="light"] .project-expand-panel__tag {
+  border-color: color-mix(in srgb, var(--accent-blue) 45%, transparent);
+}
+
+:root[data-theme="light"] .project-card__number,
+:root[data-theme="light"] .project-card__view,
+:root[data-theme="light"] .project-expand-panel__close,
+:root[data-theme="light"] .project-expand-panel__expand,
+:root[data-theme="light"] .project-lightbox__close,
+:root[data-theme="light"] .project-lightbox__arrow,
+:root[data-theme="light"] .project-lightbox__counter {
+  color: #ffffff;
+}
+
+:root[data-theme="light"] .project-expand-panel {
+  background: var(--card-solid);
+  border-color: var(--line);
+}
+
+:root[data-theme="light"] .project-expand-panel__thumb {
+  border-color: var(--line);
+}
+
+:root[data-theme="light"] .project-expand-panel__thumb:hover,
+:root[data-theme="light"] .project-expand-panel__thumb--active {
+  border-color: var(--accent-blue);
+}
+
+:root[data-theme="light"] .project-expand-panel__btn {
+  border-color: var(--line-strong);
+}
+
+:root[data-theme="light"] .project-expand-panel__btn:hover {
+  border-color: var(--accent-blue);
+}
+
+:root[data-theme="light"] .project-expand-panel__btn--primary,
+:root[data-theme="light"] .project-expand-panel__btn--primary:hover {
+  border-color: var(--accent-orange);
+}
+
+:root[data-theme="light"] .project-expand-panel__nav {
+  border-top-color: var(--line);
+}
+
+:root[data-theme="light"] .project-expand-panel__nav button {
+  border-color: color-mix(in srgb, var(--accent-blue) 55%, transparent);
+  background: color-mix(in srgb, var(--accent-blue) 8%, transparent);
+  color: var(--accent-blue);
+}
+
+:root[data-theme="light"] .project-expand-panel__body::-webkit-scrollbar-thumb,
+:root[data-theme="light"] .project-expand-panel__thumbs::-webkit-scrollbar-thumb {
+  background-color: var(--scroll-thumb);
+}
